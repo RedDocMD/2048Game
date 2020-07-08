@@ -5,7 +5,7 @@ import java.awt.geom.RoundRectangle2D
 
 const val roundedPercentage = 0.2
 
-data class Tile(val tileWidth: Double, val tileHeight: Double, val tileColor: Color, val tileContent: String) {
+data class Tile(val tileWidth: Double, val tileHeight: Double, var tileColor: Color?, var tileContent: String) {
     fun display(x: Double, y: Double, graphics2D: Graphics2D) {
         val rect = RoundRectangle2D.Double(x, y, tileWidth, tileHeight, roundedPercentage * tileWidth, roundedPercentage * tileHeight)
         graphics2D.color = tileColor
