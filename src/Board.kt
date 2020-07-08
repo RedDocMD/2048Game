@@ -10,11 +10,13 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
     private val verticalSpace = 8.0
     private val horizontalSpace = 8.0
     private val tiles: Array<Array<Tile>>
+    private val board: Array<Array<Int>>
     private val totalWidth = columns * tileWidth + (columns + 1) * horizontalSpace
     private val totalHeight = rows * tileHeight + (rows + 1) * verticalSpace
 
     init {
-        tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, Color.RED, "1") } }
+        tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, Color.RED, "1024") } }
+        board = Array(rows) { Array(columns) { 0 } }
         preferredSize = Dimension(totalWidth.toInt(), totalHeight.toInt())
     }
 
@@ -23,10 +25,10 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         if (g != null) {
             val g2d = g as Graphics2D
             var y = verticalSpace
-            for (i in 0 until rows) {
+            for (row in tiles) {
                 var x = horizontalSpace
-                for (j in 0 until columns) {
-                    tiles[i][j].display(x, y, g2d)
+                for (tile in row) {
+                    tile.display(x, y, g2d)
                     x += tileWidth + horizontalSpace
                 }
                 y += tileHeight + verticalSpace
