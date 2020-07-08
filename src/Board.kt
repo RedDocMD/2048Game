@@ -45,7 +45,17 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
             val flattenedBoard = board.flatten()
             return when {
                 2048 in flattenedBoard -> GameState.WON
-                0 !in flattenedBoard -> GameState.LOST
+                0 !in flattenedBoard -> {
+                    val up = getMoveCombinedBoard(Direction.UP, board).flatten()
+                    val down = getMoveCombinedBoard(Direction.DOWN, board).flatten()
+                    val left = getMoveCombinedBoard(Direction.LEFT, board).flatten()
+                    val right = getMoveCombinedBoard(Direction.RIGHT, board).flatten()
+                    val old = board.flatten()
+
+                    if (up == old && down == old && left == old && right == old)
+                        GameState.LOST
+                    else GameState.RUNNING
+                }
                 else -> GameState.RUNNING
             }
         }
@@ -76,13 +86,12 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         return board[i][j]
     }
 
-    fun getMovedBoard(direction: Direction): Array<Array<Int>> {
-        // Deep copy of board
-        val newBoard = Array(rows) { i -> Array(columns) { j -> board[i][j] } }
+    private fun getMovedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
+        // Deep copy of old board
+        val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
 
         when (direction) {
             Direction.LEFT -> {
-                // First move the tiles
                 for (i in 0 until rows) {
                     var left = 0
                     while (left < columns && newBoard[i][left] != 0) left++
@@ -96,7 +105,63 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                         }
                     }
                 }
-                // Then combine
+            }
+            Direction.RIGHT -> {
+                for (i in 0 until rows) {
+                    var right = columns - 1
+                    while (right >= 0 && newBoard[i][right] != 0) right--
+                    for (j in right downTo 0) {
+                        for (jj in j - 1 downTo 0) {
+                            if (newBoard[i][jj] != 0) {
+                                newBoard[i][j] = newBoard[i][jj]
+                                newBoard[i][jj] = 0
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            Direction.UP -> {
+                for (j in 0 until columns) {
+                    var up = 0
+                    while (up < rows && newBoard[up][j] != 0) up++
+                    for (i in up until rows) {
+                        for (ii in i + 1 until rows) {
+                            if (newBoard[ii][j] != 0) {
+                                newBoard[i][j] = newBoard[ii][j]
+                                newBoard[ii][j] = 0
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            Direction.DOWN -> {
+                for (j in 0 until columns) {
+                    var down = rows - 1
+                    while (down >= 0 && newBoard[down][j] != 0) down--
+                    for (i in down downTo 0) {
+                        for (ii in i - 1 downTo 0) {
+                            if (newBoard[ii][j] != 0) {
+                                newBoard[i][j] = newBoard[ii][j]
+                                newBoard[ii][j] = 0
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return newBoard
+    }
+
+    private fun getMoveCombinedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
+        // Deep copy of old board
+        val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
+
+        when (direction) {
+            Direction.LEFT -> {
                 for (i in 0 until rows) {
                     for (j in 0 until columns - 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i][j + 1]) {
@@ -111,21 +176,6 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                 }
             }
             Direction.RIGHT -> {
-                // First move the tiles
-                for (i in 0 until rows) {
-                    var right = columns - 1
-                    while (right >= 0 && newBoard[i][right] != 0) right--
-                    for (j in right downTo 0) {
-                        for (jj in j - 1 downTo 0) {
-                            if (newBoard[i][jj] != 0) {
-                                newBoard[i][j] = newBoard[i][jj]
-                                newBoard[i][jj] = 0
-                                break
-                            }
-                        }
-                    }
-                }
-                // Then combine
                 for (i in 0 until rows) {
                     for (j in columns - 1 downTo 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i][j - 1]) {
@@ -140,21 +190,6 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                 }
             }
             Direction.UP -> {
-                // First move the tiles
-                for (j in 0 until columns) {
-                    var up = 0
-                    while (up < rows && newBoard[up][j] != 0) up++
-                    for (i in up until rows) {
-                        for (ii in i + 1 until rows) {
-                            if (newBoard[ii][j] != 0) {
-                                newBoard[i][j] = newBoard[ii][j]
-                                newBoard[ii][j] = 0
-                                break
-                            }
-                        }
-                    }
-                }
-                // Then combine
                 for (j in 0 until columns) {
                     for (i in 0 until rows - 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i + 1][j]) {
@@ -169,21 +204,6 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                 }
             }
             Direction.DOWN -> {
-                // First move the tiles
-                for (j in 0 until columns) {
-                    var down = rows - 1
-                    while (down >= 0 && newBoard[down][j] != 0) down--
-                    for (i in down downTo 0) {
-                        for (ii in i - 1 downTo 0) {
-                            if (newBoard[ii][j] != 0) {
-                                newBoard[i][j] = newBoard[ii][j]
-                                newBoard[ii][j] = 0
-                                break
-                            }
-                        }
-                    }
-                }
-                // Then combine
                 for (j in 0 until columns) {
                     for (i in rows - 1 downTo 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i - 1][j]) {
@@ -213,7 +233,8 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     "Game over",
                     JOptionPane.INFORMATION_MESSAGE)
             else -> {
-                val newBoard = getMovedBoard(direction)
+                var newBoard = getMovedBoard(direction, board)
+                newBoard = getMoveCombinedBoard(direction, newBoard)
                 if (newBoard.flatten() != board.flatten()) {
                     // Choose a random square and randomly set it to 2 or 4
                     val random = Random.Default
