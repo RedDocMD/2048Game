@@ -11,7 +11,8 @@ data class Tile(val tileWidth: Double, val tileHeight: Double, var tileColor: Co
         graphics2D.color = tileColor
         graphics2D.fill(rect)
         graphics2D.color = Color.BLACK
-        val tileFont = Font("Sans Serif", Font.BOLD, 22)
+        val newFont = Font.createFont(Font.TRUETYPE_FONT, Tile::class.java.getResourceAsStream("3dsRegular.ttf"))
+        val tileFont = newFont.deriveFont(22f)
         graphics2D.font = tileFont
         val metrics = graphics2D.getFontMetrics(tileFont)
         val textHeight = metrics.height
