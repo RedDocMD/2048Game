@@ -3,6 +3,7 @@ import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.swing.JPanel
+import kotlin.random.Random
 
 val colors = mapOf(
         0 to Color(206, 206, 206),
@@ -12,7 +13,11 @@ val colors = mapOf(
         16 to Color(237, 156, 115),
         32 to Color(237, 125, 93),
         64 to Color(242, 77, 51),
-        128 to Color(247, 221, 72)
+        128 to Color(247, 221, 72),
+        256 to Color(255, 221, 0),
+        512 to Color(180, 247, 35),
+        1024 to Color(17, 245, 188),
+        2048 to Color(17, 74, 245)
 )
 
 data class Board(val rows: Int, val columns: Int) : JPanel() {
@@ -29,6 +34,15 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
         board = Array(rows) { Array(columns) { 0 } }
         preferredSize = Dimension(totalWidth.toInt(), totalHeight.toInt())
+
+        // Choose two random squares to set as 2
+        val random = Random.Default
+        val lim = rows * columns
+        val pos1 = random.nextInt(lim)
+        var pos2 = random.nextInt(lim)
+        while (pos1 == pos2) pos2 = random.nextInt(lim)
+        this[pos1 / rows, pos1 % rows] = 2
+        this[pos2 / rows, pos2 % rows] = 2
     }
 
     operator fun set(i: Int, j: Int, number: Int) {
