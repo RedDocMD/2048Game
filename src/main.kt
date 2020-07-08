@@ -10,6 +10,7 @@ fun main() {
     frame.pack()
     frame.title = "2048 Game"
     frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    frame.isResizable = false
     // Add the keyboard listener
     frame.addKeyListener(object : KeyAdapter() {
         override fun keyPressed(e: KeyEvent?) {
