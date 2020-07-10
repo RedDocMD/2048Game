@@ -107,9 +107,9 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         return board.flatten()
     }
 
-    private fun getMovedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
+    fun getMovedBoard(direction: Direction): Array<Array<Int>> {
         // Deep copy of old board
-        val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
+        val newBoard = Array(rows) { i -> Array(columns) { j -> board[i][j] } }
 
         when (direction) {
             Direction.LEFT -> {
@@ -177,7 +177,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         return newBoard
     }
 
-    private fun getMoveCombinedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
+    fun getMoveCombinedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
         // Deep copy of old board
         val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
 
@@ -258,7 +258,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     "Game over",
                     JOptionPane.INFORMATION_MESSAGE)
             else -> {
-                var newBoard = getMovedBoard(direction, board)
+                var newBoard = getMovedBoard(direction)
                 newBoard = getMoveCombinedBoard(direction, newBoard)
                 if (newBoard.flatten() != board.flatten()) {
                     // Choose a random square and randomly set it to 2 or 4
@@ -266,7 +266,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     val lim = rows * columns
                     var pos = random.nextInt(lim)
                     while (newBoard[pos / rows][pos % rows] != 0) pos = random.nextInt(lim)
-                    val num = if (random.nextInt(2) == 0) 2 else 4
+                    val num = if (random.nextInt(10) == 9) 4 else 2
                     newBoard[pos / rows][pos % columns] = num
 
                     // Now update the actual board

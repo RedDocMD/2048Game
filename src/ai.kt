@@ -1,4 +1,4 @@
-fun static_evaluator(board: Board): Int {
+fun staticEvaluator(board: Board): Int {
     // More points = better board
     var utility = board.points
 
@@ -23,4 +23,30 @@ fun static_evaluator(board: Board): Int {
     }
 
     return utility
+}
+
+fun generateAllSuccessors(board: Board, direction: Direction): MutableList<Array<Array<Int>>> {
+    val newBoard = board.getMoveCombinedBoard(direction, board.getMovedBoard(direction))
+    val nextBoards = mutableListOf<Array<Array<Int>>>()
+    for (i in 0 until board.rows) {
+        for (j in 0 until board.columns) {
+            if (newBoard[i][j] == 0) {
+                val nextBoard2 = Array(board.rows) { ii -> Array(board.columns) { jj -> newBoard[ii][jj] } }
+                val nextBoard4 = Array(board.rows) { ii -> Array(board.columns) { jj -> newBoard[ii][jj] } }
+                nextBoard2[i][j] = 2
+                nextBoard4[i][j] = 4
+                nextBoards.add(nextBoard2)
+                nextBoards.add(nextBoard4)
+            }
+        }
+    }
+    return nextBoards
+}
+
+fun generateAllSuccessors(board: Board): List<Array<Array<Int>>> {
+    val nextBoards = generateAllSuccessors(board, Direction.UP)
+    nextBoards.addAll(generateAllSuccessors(board, Direction.DOWN))
+    nextBoards.addAll(generateAllSuccessors(board, Direction.LEFT))
+    nextBoards.addAll(generateAllSuccessors(board, Direction.RIGHT))
+    return nextBoards
 }
