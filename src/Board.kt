@@ -30,17 +30,10 @@ enum class GameState {
     RUNNING, WON, LOST
 }
 
-data class Board(val rows: Int, val columns: Int) : JPanel() {
-    private val tileWidth = 75.0
-    private val tileHeight = 75.0
-    private val verticalSpace = 8.0
-    private val horizontalSpace = 8.0
-    private val tiles: Array<Array<Tile>>
+data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val tileHeight: Double) {
+    val tiles: Array<Array<Tile>>
     private val board: Array<Array<Int>>
-    private val totalWidth = columns * tileWidth + (columns + 1) * horizontalSpace
-    private val totalHeight = rows * tileHeight + (rows + 1) * verticalSpace
     var points: Int
-        private set
 
     private val gameState: GameState
         get() {
@@ -65,7 +58,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
     init {
         tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
         board = Array(rows) { Array(columns) { 0 } }
-        preferredSize = Dimension(totalWidth.toInt(), totalHeight.toInt())
+
         points = 0
 
         // Choose two random squares to set as 2
@@ -78,11 +71,21 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         this[pos2 / rows, pos2 % rows] = 2
     }
 
-    private operator fun set(i: Int, j: Int, number: Int) {
+    fun copyOf(): Board {
+        val newBoard = Board(rows, columns, tileWidth, tileHeight)
+        newBoard.points = points
+        for (i in 0 until rows) {
+            for (j in 0 until columns) {
+                newBoard[i, j] = this[i, j]
+            }
+        }
+        return newBoard
+    }
+
+    operator fun set(i: Int, j: Int, number: Int) {
         board[i][j] = number
         tiles[i][j].tileColor = colors[number]
         tiles[i][j].tileContent = if (number == 0) "" else number.toString()
-        repaint()
     }
 
     operator fun get(i: Int, j: Int): Int {
@@ -247,13 +250,23 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         return newBoard
     }
 
+    fun moveNoRandom(direction: Direction) {
+        var newBoard = getMovedBoard(direction)
+        newBoard = getMoveCombinedBoard(direction, newBoard)
+        for (i in 0 until rows) {
+            for (j in 0 until columns) {
+                this[i, j] = newBoard[i][j]
+            }
+        }
+    }
+
     fun move(direction: Direction) {
         when (gameState) {
-            GameState.LOST -> JOptionPane.showMessageDialog(this,
+            GameState.LOST -> JOptionPane.showMessageDialog(null,
                     "Game has been lost!",
                     "Game over",
                     JOptionPane.INFORMATION_MESSAGE)
-            GameState.WON -> JOptionPane.showMessageDialog(this,
+            GameState.WON -> JOptionPane.showMessageDialog(null,
                     "Game has been won!",
                     "Game over",
                     JOptionPane.INFORMATION_MESSAGE)
@@ -272,20 +285,16 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     // Now update the actual board
                     for (i in 0 until rows) {
                         for (j in 0 until columns) {
-                            val number = newBoard[i][j]
-                            board[i][j] = number
-                            tiles[i][j].tileColor = colors[number]
-                            tiles[i][j].tileContent = if (number == 0) "" else number.toString()
+                            this[i, j] = newBoard[i][j]
                         }
                     }
-                    repaint()
 
                     when (gameState) {
-                        GameState.LOST -> JOptionPane.showMessageDialog(this,
+                        GameState.LOST -> JOptionPane.showMessageDialog(null,
                                 "Game has been lost!",
                                 "No more moves",
                                 JOptionPane.INFORMATION_MESSAGE)
-                        GameState.WON -> JOptionPane.showMessageDialog(this,
+                        GameState.WON -> JOptionPane.showMessageDialog(null,
                                 "Game has been won!",
                                 "No more moves",
                                 JOptionPane.INFORMATION_MESSAGE)
@@ -295,6 +304,28 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                 }
             }
         }
+    }
+}
+
+data class BoardComponent(val rows: Int, val columns: Int): JPanel() {
+    private val tileWidth = 75.0
+    private val tileHeight = 75.0
+    private val verticalSpace = 8.0
+    private val horizontalSpace = 8.0
+    private val totalWidth = columns * tileWidth + (columns + 1) * horizontalSpace
+    private val totalHeight = rows * tileHeight + (rows + 1) * verticalSpace
+    private val board: Board
+    val points
+        get() = board.points
+
+    init {
+        preferredSize = Dimension(totalWidth.toInt(), totalHeight.toInt())
+        board = Board(rows, columns, tileWidth, tileHeight)
+    }
+
+    fun move(direction: Direction) {
+        board.move(direction)
+        repaint()
     }
 
     override fun paintComponent(g: Graphics?) {
@@ -306,7 +337,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
             g2d.color = Color(151, 150, 152)
             g2d.fill(backRectangle)
             var y = verticalSpace
-            for (row in tiles) {
+            for (row in board.tiles) {
                 var x = horizontalSpace
                 for (tile in row) {
                     tile.display(x, y, g2d)

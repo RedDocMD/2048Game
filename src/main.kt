@@ -8,7 +8,7 @@ import javax.swing.JPanel
 
 fun main() {
     val frame = JFrame()
-    val board = Board(4, 4)
+    val board = BoardComponent(4, 4)
     frame.add(board, BorderLayout.CENTER)
     val topPanel = JPanel()
     val pointsLabel = JLabel("Points: ${board.points}")
