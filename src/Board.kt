@@ -89,6 +89,24 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         return board[i][j]
     }
 
+    fun neighbors(i: Int, j: Int): List<Int> {
+        val neighbors = mutableListOf<Int>()
+        val vertical = arrayOf(1, 0, -1, 0)
+        val horizontal = arrayOf(0, 1, 0, -1)
+        for (k in 0 until 4) {
+            val ii = i + vertical[k]
+            val jj = j + horizontal[k]
+            if (ii >= 0 && jj >= 0 && ii < rows && jj < columns) {
+                neighbors.add(this[i, j])
+            }
+        }
+        return neighbors
+    }
+
+    fun flattenedBoard(): List<Int> {
+        return board.flatten()
+    }
+
     private fun getMovedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
         // Deep copy of old board
         val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
