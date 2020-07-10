@@ -39,6 +39,8 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
     private val board: Array<Array<Int>>
     private val totalWidth = columns * tileWidth + (columns + 1) * horizontalSpace
     private val totalHeight = rows * tileHeight + (rows + 1) * verticalSpace
+    var points: Int
+        private set
 
     private val gameState: GameState
         get() {
@@ -64,6 +66,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
         tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
         board = Array(rows) { Array(columns) { 0 } }
         preferredSize = Dimension(totalWidth.toInt(), totalHeight.toInt())
+        points = 0
 
         // Choose two random squares to set as 2
         val random = Random.Default
@@ -166,6 +169,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     for (j in 0 until columns - 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i][j + 1]) {
                             newBoard[i][j] *= 2
+                            points += newBoard[i][j]
                             newBoard[i][j + 1] = 0
                             for (jj in j + 2 until columns) {
                                 newBoard[i][jj - 1] = newBoard[i][jj]
@@ -180,6 +184,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     for (j in columns - 1 downTo 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i][j - 1]) {
                             newBoard[i][j] *= 2
+                            points += newBoard[i][j]
                             newBoard[i][j - 1] = 0
                             for (jj in j - 2 downTo 0) {
                                 newBoard[i][jj + 1] = newBoard[i][jj]
@@ -194,6 +199,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     for (i in 0 until rows - 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i + 1][j]) {
                             newBoard[i][j] *= 2
+                            points += newBoard[i][j]
                             newBoard[i + 1][j] = 0
                             for (ii in i + 2 until rows) {
                                 newBoard[ii - 1][j] = newBoard[ii][j]
@@ -208,6 +214,7 @@ data class Board(val rows: Int, val columns: Int) : JPanel() {
                     for (i in rows - 1 downTo 1) {
                         if (newBoard[i][j] != 0 && newBoard[i][j] == newBoard[i - 1][j]) {
                             newBoard[i][j] *= 2
+                            points += newBoard[i][j]
                             newBoard[i - 1][j] = 0
                             for (ii in i - 2 downTo 0) {
                                 newBoard[ii + 1][j] = newBoard[ii][j]
