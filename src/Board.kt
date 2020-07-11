@@ -32,7 +32,7 @@ enum class GameState {
 
 data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val tileHeight: Double) {
     val tiles: Array<Array<Tile>> = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
-    private val board: Array<Array<Int>> = Array(rows) { Array(columns) { 0 } }
+    val board: Array<Array<Int>> = Array(rows) { Array(columns) { 0 } }
     var points: Int = 0
 
     val gameState: GameState
@@ -266,11 +266,11 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
     }
 
     fun moveNoRandom(direction: Direction) {
-        var newBoard = getMovedBoard(direction)
-        newBoard = getMoveCombinedBoard(direction, newBoard)
+        val newBoard = getMovedBoard(direction)
+        val movedBoard = getMoveCombinedBoard(direction, newBoard)
         for (i in 0 until rows) {
             for (j in 0 until columns) {
-                this[i, j] = newBoard[i][j]
+                this[i, j] = movedBoard[i][j]
             }
         }
     }

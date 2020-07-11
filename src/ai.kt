@@ -15,13 +15,27 @@ fun staticEvaluator(board: Board): Int {
     }
 
     // Extra value for largest value in bottom-left corner
-    val cornerBump = 100
+    val cornerBump = board.points
     var flattenedBoard = board.flattenedBoard()
     flattenedBoard = flattenedBoard.sortedDescending()
+    flattenedBoard = flattenedBoard.distinct()
     if (board[board.rows - 1, board.columns - 1] == flattenedBoard[0]) {
         utility += cornerBump
+//        var count = 0
+//        if (flattenedBoard.size > 1 && board[board.rows - 1, board.columns - 2] == flattenedBoard[1]) {
+//            utility += (cornerBump * (flattenedBoard[1].toDouble() / flattenedBoard[0].toDouble())).toInt()
+//            count++
+//        }
+//        if (flattenedBoard.size > 1 && board[board.rows - 2, board.columns - 1] == flattenedBoard[1]) {
+//            utility += (cornerBump * (flattenedBoard[1].toDouble() / flattenedBoard[0].toDouble())).toInt()
+//            count++
+//        }
+//        if (count == 1) {
+//            if (flattenedBoard.size > 2 && (board[board.rows - 2, board.columns - 1] == flattenedBoard[2] || board[board.rows - 1, board.columns - 2] == flattenedBoard[2])) {
+//                utility += (cornerBump * (flattenedBoard[2].toDouble() / flattenedBoard[0].toDouble())).toInt()
+//            }
+//        }
     }
-
     return utility
 }
 
@@ -54,16 +68,33 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
         var maximum = 0
         enumValues<Direction>().forEach { dir ->
             if (dir != Direction.NONE) {
-                var sum = 0.0
-                val successors = generateAllSuccessors(board, dir)
-                successors.forEach {
-                    val (probability, successor) = it
-                    sum += probability * depthLimitedSearch(successor, height - 1).first
-                }
-                val average = (sum / successors.size).toInt()
-                if (average > maximum) {
-                    maximum = average
-                    direction = dir
+                val copyBoard = board.copyOf()
+                copyBoard.moveNoRandom(dir)
+                if (copyBoard != board) {
+                    var count = 0
+                    var sum = 0.0
+                    val average: Int
+                    if (copyBoard.gameState != GameState.RUNNING) {
+                        average = staticEvaluator(copyBoard)
+                    } else {
+                        for (i in 0 until copyBoard.rows) {
+                            for (j in 0 until copyBoard.columns) {
+                                if (copyBoard[i, j] == 0) {
+                                    copyBoard[i, j] = 2
+                                    sum += depthLimitedSearch(copyBoard, height - 1).first * 0.9
+                                    copyBoard[i, j] = 4
+                                    sum += depthLimitedSearch(copyBoard, height - 1).first * 0.1
+                                    copyBoard[i, j] = 0
+                                    count += 2
+                                }
+                            }
+                        }
+                        average = (sum / count).toInt()
+                    }
+                    if (average > maximum) {
+                        maximum = average
+                        direction = dir
+                    }
                 }
             }
         }
