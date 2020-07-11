@@ -67,6 +67,23 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
         this[pos2 / rows, pos2 % rows] = 2
     }
 
+    fun reset() {
+        for (i in 0 until rows) {
+            for (j in 0 until columns) {
+                this[i, j] = 0
+            }
+        }
+        points = 0
+
+        val random = Random.Default
+        val lim = rows * columns
+        val pos1 = random.nextInt(lim)
+        var pos2 = random.nextInt(lim)
+        while (pos1 == pos2) pos2 = random.nextInt(lim)
+        this[pos1 / rows, pos1 % rows] = 2
+        this[pos2 / rows, pos2 % rows] = 2
+    }
+
     fun copyOf(): Board {
         val newBoard = Board(rows, columns, tileWidth, tileHeight)
         newBoard.points = points
@@ -312,7 +329,7 @@ data class BoardComponent(val rows: Int, val columns: Int): JPanel() {
     private val horizontalSpace = 8.0
     private val totalWidth = columns * tileWidth + (columns + 1) * horizontalSpace
     private val totalHeight = rows * tileHeight + (rows + 1) * verticalSpace
-    private val board: Board
+    val board: Board
     val points
         get() = board.points
 
@@ -323,6 +340,11 @@ data class BoardComponent(val rows: Int, val columns: Int): JPanel() {
 
     fun move(direction: Direction) {
         board.move(direction)
+        repaint()
+    }
+
+    fun reset() {
+        board.reset()
         repaint()
     }
 
