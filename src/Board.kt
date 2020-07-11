@@ -35,7 +35,7 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
     private val board: Array<Array<Int>> = Array(rows) { Array(columns) { 0 } }
     var points: Int = 0
 
-    private val gameState: GameState
+    val gameState: GameState
         get() {
             val flattenedBoard = board.flatten()
             return when {

@@ -6,6 +6,7 @@ import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JPanel
+import kotlin.system.measureTimeMillis
 
 fun main() {
     val frame = JFrame()
@@ -28,6 +29,21 @@ fun main() {
         pointsLabel.text = "Points: ${board.points}"
     }
     buttonPanel.add(aiMoveButton)
+
+    val aiStartButton = JButton("AI Start")
+    aiStartButton.addActionListener {
+        while (board.board.gameState == GameState.RUNNING) {
+            val direction = getNextAIMove(board.board)
+            println(direction)
+            val totalTime = 2000 // ms
+            val elapsedTime = measureTimeMillis {
+                board.move(direction)
+            }
+            val sleepTime = if (elapsedTime < totalTime) totalTime - elapsedTime else 0
+            pointsLabel.text = "Points: ${board.points}"
+        }
+    }
+    buttonPanel.add(aiStartButton)
 
     val resetButton = JButton("Reset")
     resetButton.addActionListener {

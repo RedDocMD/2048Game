@@ -72,6 +72,6 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
 }
 
 fun getNextAIMove(board: Board): Direction {
-    val heightLimit = 2
+    val heightLimit = 3
     return depthLimitedSearch(board, heightLimit).second
 }
