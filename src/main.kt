@@ -23,6 +23,7 @@ fun main() {
     val aiMoveButton = JButton("AI Move")
     aiMoveButton.addActionListener {
         val direction = getNextAIMove(board.board)
+        println(direction)
         board.move(direction)
         pointsLabel.text = "Points: ${board.points}"
     }

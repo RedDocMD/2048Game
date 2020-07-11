@@ -320,6 +320,26 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Board
+
+        if (rows != other.rows) return false
+        if (columns != other.columns) return false
+        if (!board.contentDeepEquals(other.board)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = rows
+        result = 31 * result + columns
+        result = 31 * result + board.contentDeepHashCode()
+        return result
+    }
 }
 
 data class BoardComponent(val rows: Int, val columns: Int): JPanel() {

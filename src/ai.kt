@@ -29,15 +29,17 @@ fun generateAllSuccessors(board: Board, direction: Direction): MutableList<Pair<
     val copyBoard = board.copyOf()
     copyBoard.moveNoRandom(direction)
     val nextBoards = mutableListOf<Pair<Double, Board>>()
-    for (i in 0 until board.rows) {
-        for (j in 0 until board.columns) {
-            if (copyBoard[i, j] == 0) {
-                var nextBoard = copyBoard.copyOf()
-                nextBoard[i, j] = 2
-                nextBoards.add(Pair(0.9, nextBoard))
-                nextBoard = copyBoard.copyOf()
-                nextBoard[i, j] = 4
-                nextBoards.add(Pair(0.1, nextBoard))
+    if (copyBoard != board) {
+        for (i in 0 until board.rows) {
+            for (j in 0 until board.columns) {
+                if (copyBoard[i, j] == 0) {
+                    var nextBoard = copyBoard.copyOf()
+                    nextBoard[i, j] = 2
+                    nextBoards.add(Pair(0.9, nextBoard))
+                    nextBoard = copyBoard.copyOf()
+                    nextBoard[i, j] = 4
+                    nextBoards.add(Pair(0.1, nextBoard))
+                }
             }
         }
     }
