@@ -23,7 +23,7 @@ val colors = mapOf(
 )
 
 enum class Direction {
-    LEFT, RIGHT, UP, DOWN
+    LEFT, RIGHT, UP, DOWN, NONE
 }
 
 enum class GameState {
@@ -31,9 +31,9 @@ enum class GameState {
 }
 
 data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val tileHeight: Double) {
-    val tiles: Array<Array<Tile>>
-    private val board: Array<Array<Int>>
-    var points: Int
+    val tiles: Array<Array<Tile>> = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
+    private val board: Array<Array<Int>> = Array(rows) { Array(columns) { 0 } }
+    var points: Int = 0
 
     private val gameState: GameState
         get() {
@@ -56,10 +56,6 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
         }
 
     init {
-        tiles = Array(rows) { Array(columns) { Tile(tileWidth, tileHeight, colors[0], "") } }
-        board = Array(rows) { Array(columns) { 0 } }
-
-        points = 0
 
         // Choose two random squares to set as 2
         val random = Random.Default
@@ -110,7 +106,7 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
         return board.flatten()
     }
 
-    fun getMovedBoard(direction: Direction): Array<Array<Int>> {
+    private fun getMovedBoard(direction: Direction): Array<Array<Int>> {
         // Deep copy of old board
         val newBoard = Array(rows) { i -> Array(columns) { j -> board[i][j] } }
 
@@ -175,12 +171,13 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
                     }
                 }
             }
+            else -> {}
         }
 
         return newBoard
     }
 
-    fun getMoveCombinedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
+    private fun getMoveCombinedBoard(direction: Direction, oldBoard: Array<Array<Int>>): Array<Array<Int>> {
         // Deep copy of old board
         val newBoard = Array(rows) { i -> Array(columns) { j -> oldBoard[i][j] } }
 
@@ -245,6 +242,7 @@ data class Board(val rows: Int, val columns: Int, val tileWidth: Double, val til
                     }
                 }
             }
+            else -> {}
         }
 
         return newBoard
