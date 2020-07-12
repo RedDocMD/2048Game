@@ -1,19 +1,19 @@
-fun staticEvaluator(board: Board): Int {
+fun staticEvaluator(board: Board): Double {
     val winBump = 1000000
     val state = board.gameState
 
-    if (state == GameState.WON) return winBump
-    else if (state == GameState.LOST) return 0
+    if (state == GameState.WON) return winBump.toDouble()
+    else if (state == GameState.LOST) return 0.0
 
     // More points = better board
 //    var utility = board.points
-    var utility = 0
+    var utility = 0.0
 
     val flattenedBoard = board.flattenedBoard().sortedDescending()
     val distinctBoard = flattenedBoard.distinct()
 
     utility += flattenedBoard.sum()
-    utility += flattenedBoard.count { it == 0 }
+    utility += 2 * flattenedBoard.count { it == 0 }
 
     if (1024 in distinctBoard) {
         utility += winBump / 4
@@ -40,7 +40,7 @@ fun staticEvaluator(board: Board): Int {
     }
 
     // Extra value for largest value in bottom-left corner
-    val cornerBump = board.points
+    val cornerBump = 80
 
     if (board[board.rows - 1, board.columns - 1] == distinctBoard[0]) {
         utility += cornerBump
@@ -62,12 +62,12 @@ fun staticEvaluator(board: Board): Int {
     return utility
 }
 
-fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
+fun depthLimitedSearch(board: Board, height: Int): Pair<Double, Direction> {
     if (height == 0) {
         return Pair(staticEvaluator(board), Direction.NONE)
     } else {
         var direction = Direction.NONE
-        var maximum = 0
+        var maximum = 0.0
         enumValues<Direction>().toList().shuffled().forEach { dir ->
             if (dir != Direction.NONE) {
                 val copyBoard = board.copyOf()
@@ -75,7 +75,7 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
                 if (copyBoard != board) {
                     var count = 0
                     var sum = 0.0
-                    val average: Int
+                    val average: Double
                     if (copyBoard.gameState != GameState.RUNNING) {
                         average = staticEvaluator(copyBoard)
                     } else {
@@ -91,7 +91,7 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
                                 }
                             }
                         }
-                        average = (sum / count).toInt()
+                        average = sum / count
                     }
                     if (average >= maximum) {
                         maximum = average
