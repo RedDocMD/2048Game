@@ -1,6 +1,16 @@
 fun staticEvaluator(board: Board): Int {
     // More points = better board
+    val state = board.gameState
+    if (state == GameState.WON) return 1000000
+    else if (state == GameState.LOST) return 0
     var utility = board.points
+
+    var flattenedBoard = board.flattenedBoard()
+    flattenedBoard = flattenedBoard.sortedDescending()
+    flattenedBoard = flattenedBoard.distinct()
+
+    val neighborBump = board.points
+    val maxValue = flattenedBoard[0]
 
     // Adding utility for adjacent tiles of equal value
     for (i in 0 until board.rows) {
@@ -8,7 +18,7 @@ fun staticEvaluator(board: Board): Int {
             val neighbors = board.neighbors(i, j)
             for (neighbor in neighbors) {
                 if (neighbor == board[i, j]) {
-                    utility += neighbor
+                    utility += ((neighbor.toDouble() / maxValue.toDouble()) * neighborBump).toInt()
                 }
             }
         }
@@ -16,9 +26,7 @@ fun staticEvaluator(board: Board): Int {
 
     // Extra value for largest value in bottom-left corner
     val cornerBump = board.points
-    var flattenedBoard = board.flattenedBoard()
-    flattenedBoard = flattenedBoard.sortedDescending()
-    flattenedBoard = flattenedBoard.distinct()
+
     if (board[board.rows - 1, board.columns - 1] == flattenedBoard[0]) {
         utility += cornerBump
 //        var count = 0
@@ -37,27 +45,6 @@ fun staticEvaluator(board: Board): Int {
 //        }
     }
     return utility
-}
-
-fun generateAllSuccessors(board: Board, direction: Direction): MutableList<Pair<Double, Board>> {
-    val copyBoard = board.copyOf()
-    copyBoard.moveNoRandom(direction)
-    val nextBoards = mutableListOf<Pair<Double, Board>>()
-    if (copyBoard != board) {
-        for (i in 0 until board.rows) {
-            for (j in 0 until board.columns) {
-                if (copyBoard[i, j] == 0) {
-                    var nextBoard = copyBoard.copyOf()
-                    nextBoard[i, j] = 2
-                    nextBoards.add(Pair(0.9, nextBoard))
-                    nextBoard = copyBoard.copyOf()
-                    nextBoard[i, j] = 4
-                    nextBoards.add(Pair(0.1, nextBoard))
-                }
-            }
-        }
-    }
-    return nextBoards
 }
 
 fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
@@ -91,7 +78,7 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
                         }
                         average = (sum / count).toInt()
                     }
-                    if (average > maximum) {
+                    if (average >= maximum) {
                         maximum = average
                         direction = dir
                     }

@@ -24,32 +24,43 @@ fun main() {
     val aiMoveButton = JButton("AI Move")
     aiMoveButton.addActionListener {
         val direction = getNextAIMove(board.board)
-        println(direction)
         board.move(direction)
         pointsLabel.text = "Points: ${board.points}"
     }
-    buttonPanel.add(aiMoveButton)
-
-    val aiStartButton = JButton("AI Start")
-    aiStartButton.addActionListener {
-        while (board.board.gameState == GameState.RUNNING) {
-            val direction = getNextAIMove(board.board)
-            println(direction)
-            val totalTime = 2000 // ms
-            val elapsedTime = measureTimeMillis {
-                board.move(direction)
-            }
-            val sleepTime = if (elapsedTime < totalTime) totalTime - elapsedTime else 0
-            pointsLabel.text = "Points: ${board.points}"
-        }
-    }
-    buttonPanel.add(aiStartButton)
 
     val resetButton = JButton("Reset")
     resetButton.addActionListener {
         board.reset()
         pointsLabel.text = "Points: ${board.points}"
     }
+
+    val aiStartButton = JButton("AI Start")
+    aiStartButton.addActionListener {
+        aiMoveButton.isEnabled = false
+        aiStartButton.isEnabled = false
+        resetButton.isEnabled = false
+        Thread(Runnable {
+            var moveCount = 0
+            while (board.board.gameState == GameState.RUNNING) {
+                val direction = getNextAIMove(board.board)
+                if (direction == Direction.NONE) break
+                moveCount += 1
+                println(direction)
+                EventQueue.invokeLater {
+                    board.move(direction)
+                    pointsLabel.text = "Points: ${board.points}"
+                }
+                Thread.sleep(100)
+            }
+            println("Moves played: $moveCount")
+            aiMoveButton.isEnabled = true
+            aiStartButton.isEnabled = true
+            resetButton.isEnabled = true
+        }).start()
+    }
+
+    buttonPanel.add(aiMoveButton)
+    buttonPanel.add(aiStartButton)
     buttonPanel.add(resetButton)
 
     frame.add(buttonPanel, BorderLayout.SOUTH)
