@@ -15,6 +15,8 @@ fun staticEvaluator(board: Board): Int {
     val distinctBoard = flattenedBoard.distinct()
 
     utility += flattenedBoard.sum()
+    utility += flattenedBoard.count { it == 0 }
+
     if (1024 in distinctBoard) {
         utility += winBump / 4
     }
