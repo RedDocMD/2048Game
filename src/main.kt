@@ -1,5 +1,6 @@
 import java.awt.BorderLayout
 import java.awt.EventQueue
+import java.awt.FlowLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import javax.swing.JButton
@@ -15,8 +16,12 @@ fun main() {
     frame.add(board, BorderLayout.CENTER)
 
     val topPanel = JPanel()
+    topPanel.layout = FlowLayout(FlowLayout.CENTER, 30, 5)
     val pointsLabel = JLabel("Points: ${board.points}")
+    val movesLabel = JLabel("Moves: 0")
     topPanel.add(pointsLabel)
+    topPanel.add(movesLabel)
+
     frame.add(topPanel, BorderLayout.NORTH)
 
     val buttonPanel = JPanel()
@@ -45,14 +50,13 @@ fun main() {
                 val direction = getNextAIMove(board.board)
                 if (direction == Direction.NONE) break
                 moveCount += 1
-                println(direction)
                 EventQueue.invokeLater {
                     board.move(direction)
                     pointsLabel.text = "Points: ${board.points}"
+                    movesLabel.text = "Moves: $moveCount"
                 }
                 Thread.sleep(100)
             }
-            println("Moves played: $moveCount")
             aiMoveButton.isEnabled = true
             aiStartButton.isEnabled = true
             resetButton.isEnabled = true

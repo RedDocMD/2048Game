@@ -1,16 +1,30 @@
+import java.lang.Integer.max
+
 fun staticEvaluator(board: Board): Int {
-    // More points = better board
+    val winBump = 1000000
     val state = board.gameState
-    if (state == GameState.WON) return 1000000
+
+    if (state == GameState.WON) return winBump
     else if (state == GameState.LOST) return 0
-    var utility = board.points
 
-    var flattenedBoard = board.flattenedBoard()
-    flattenedBoard = flattenedBoard.sortedDescending()
-    flattenedBoard = flattenedBoard.distinct()
+    // More points = better board
+//    var utility = board.points
+    var utility = 0
 
-    val neighborBump = board.points
-    val maxValue = flattenedBoard[0]
+    val flattenedBoard = board.flattenedBoard().sortedDescending()
+    val distinctBoard = flattenedBoard.distinct()
+
+    utility += flattenedBoard.sum()
+    if (1024 in distinctBoard) {
+        utility += winBump / 4
+    }
+
+    if (512 in distinctBoard) {
+        utility += winBump / 8
+    }
+
+//    val neighborBump = board.points.toDouble() * 0.1
+//    val maxValue = flattenedBoard[0]
 
     // Adding utility for adjacent tiles of equal value
     for (i in 0 until board.rows) {
@@ -18,7 +32,8 @@ fun staticEvaluator(board: Board): Int {
             val neighbors = board.neighbors(i, j)
             for (neighbor in neighbors) {
                 if (neighbor == board[i, j]) {
-                    utility += ((neighbor.toDouble() / maxValue.toDouble()) * neighborBump).toInt()
+//                    utility += max(neighbor, ((neighbor.toDouble() / maxValue.toDouble()) * neighborBump).toInt())
+                    utility += neighbor / 2
                 }
             }
         }
@@ -27,7 +42,7 @@ fun staticEvaluator(board: Board): Int {
     // Extra value for largest value in bottom-left corner
     val cornerBump = board.points
 
-    if (board[board.rows - 1, board.columns - 1] == flattenedBoard[0]) {
+    if (board[board.rows - 1, board.columns - 1] == distinctBoard[0]) {
         utility += cornerBump
 //        var count = 0
 //        if (flattenedBoard.size > 1 && board[board.rows - 1, board.columns - 2] == flattenedBoard[1]) {
@@ -53,7 +68,7 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
     } else {
         var direction = Direction.NONE
         var maximum = 0
-        enumValues<Direction>().forEach { dir ->
+        enumValues<Direction>().toList().shuffled().forEach { dir ->
             if (dir != Direction.NONE) {
                 val copyBoard = board.copyOf()
                 copyBoard.moveNoRandom(dir)
@@ -90,6 +105,21 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Int, Direction> {
 }
 
 fun getNextAIMove(board: Board): Direction {
-    val heightLimit = 3
+    val heightLimit: Int
+    var emptyCount = 0
+    for (i in 0 until board.rows) {
+        for (j in 0 until board.columns) {
+            if (board[i, j] == 0) {
+                emptyCount++
+            }
+        }
+    }
+    val totalCount = board.rows * board.columns
+    heightLimit = when {
+        emptyCount == 0 -> 5
+        totalCount / emptyCount >= 4 -> 4
+        totalCount / emptyCount >= 2 -> 3
+        else -> 3
+    }
     return depthLimitedSearch(board, heightLimit).second
 }
