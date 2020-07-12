@@ -1,5 +1,3 @@
-import java.lang.Integer.max
-
 fun staticEvaluator(board: Board): Int {
     val winBump = 1000000
     val state = board.gameState
@@ -116,11 +114,9 @@ fun getNextAIMove(board: Board): Direction {
             }
         }
     }
-    val totalCount = board.rows * board.columns
     heightLimit = when {
         emptyCount == 0 -> 5
-        totalCount / emptyCount >= 4 -> 4
-        totalCount / emptyCount >= 2 -> 3
+        emptyCount <= 5 -> 4
         else -> 3
     }
     return depthLimitedSearch(board, heightLimit).second
