@@ -7,7 +7,6 @@ import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JPanel
-import kotlin.system.measureTimeMillis
 
 fun main() {
     val frame = JFrame()
@@ -37,6 +36,7 @@ fun main() {
     resetButton.addActionListener {
         board.reset()
         pointsLabel.text = "Points: ${board.points}"
+        movesLabel.text = "Moves: 0"
     }
 
     val aiStartButton = JButton("AI Start")
