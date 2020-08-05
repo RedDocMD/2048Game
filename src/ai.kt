@@ -87,7 +87,7 @@ fun depthLimitedSearch(board: Board, height: Int): Pair<Double, Direction> {
                                     copyBoard[i, j] = 4
                                     sum += depthLimitedSearch(copyBoard, height - 1).first * 0.1
                                     copyBoard[i, j] = 0
-                                    count += 2
+                                    count += 1
                                 }
                             }
                         }
