@@ -1,3 +1,5 @@
+package org.deep.game
+
 fun staticEvaluator(board: Board): Double {
     val winBump = 1000000
     val state = board.gameState

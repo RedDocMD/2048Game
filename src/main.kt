@@ -1,3 +1,7 @@
+import org.deep.game.BoardComponent
+import org.deep.game.Direction
+import org.deep.game.GameState
+import org.deep.game.getNextAIMove
 import java.awt.BorderLayout
 import java.awt.EventQueue
 import java.awt.FlowLayout
@@ -44,7 +48,7 @@ fun main() {
         aiMoveButton.isEnabled = false
         aiStartButton.isEnabled = false
         resetButton.isEnabled = false
-        Thread(Runnable {
+        Thread {
             var moveCount = 0
             while (board.board.gameState == GameState.RUNNING) {
                 val direction = getNextAIMove(board.board)
@@ -60,7 +64,7 @@ fun main() {
             aiMoveButton.isEnabled = true
             aiStartButton.isEnabled = true
             resetButton.isEnabled = true
-        }).start()
+        }.start()
     }
 
     buttonPanel.add(aiMoveButton)
