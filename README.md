@@ -14,7 +14,7 @@ open this project from the File menu: `File -> New -> Project from Version Contr
 You can also clone this repo with `git clone https://github.com/RedDocMD/2048Game` and open it in IntelliJ.
 
 ### As a JAR file
-Alternatively, if you have Java 8 or higher installed, you can download the JAR file from [here](https://github.com/RedDocMD/2048Game/releases/tag/1.0).
+Alternatively, if you have Java 8 or higher installed, you can download the JAR file from [here](https://github.com/RedDocMD/2048Game/releases/tag/1.1).
 Then run it as `java -jar 2048Game.jar`.
 
 ## Running the AI
