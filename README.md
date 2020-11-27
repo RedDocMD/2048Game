@@ -4,7 +4,7 @@ The AI uses a **depth-limited tree search** to choose the optimal move.
 ## Screenshots
 The Game:
 
-![The Game](assets/2048game.png)
+![The Game](assets/2048Game.png)
 
 ## Running
 ### With IntelliJ
